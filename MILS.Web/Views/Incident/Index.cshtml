@@ -1,0 +1,83 @@
+@model List<MILS.Domain.Incident>
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<div class="container mt-5"> <!-- Conteneur principal pour l'espacement et le centrage -->
+    <div class="card shadow"> <!-- Ajout d'une ombre pour une meilleure définition -->
+        <form method="post" asp-controller="Incident" asp-action="Edit">
+            <div class="card-header bg-primary text-white"> <!-- En-tête de carte stylisé -->
+                <h4 class="card-title">Gestion des Incidents</h4> <!-- Titre de la carte -->
+            </div>
+            <div class="card-body bg-light"> <!-- Fond plus clair pour le corps de la carte -->
+                <div class="mb-4">
+                                <a asp-controller="Tracking" asp-action="Index" class="btn btn-outline-secondary"> <!-- Assurez-vous que l'Action et le Controller sont corrects -->
+                                    <i class="bi bi-arrow-left"></i> Retour
+                                </a>
+                            </div>
+                <div class="accordion accordion-flush" id="accordionFlushExample">
+                    @for (int incidentIndex = 0; incidentIndex < Model.Count; incidentIndex++)
+                    {
+                        <input type="hidden" asp-for="@Model[incidentIndex].Id"/>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="flush-heading-@incidentIndex">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-@incidentIndex" aria-expanded="false" aria-controls="flush-collapse-@incidentIndex">
+                                    @Model[incidentIndex].Category.ShortLabel <!-- Information plus claire -->
+                                </button>
+                            </h2>
+                            <div id="flush-collapse-@incidentIndex" class="accordion-collapse collapse" aria-labelledby="flush-heading-@incidentIndex" data-bs-parent="#accordionFlushExample">
+                                <div class="accordion-body">
+                                    <h5 class="fw-bold mb-3">Catégorie: @Model[incidentIndex].Category.ShortLabel</h5> <!-- Titre de la section -->
+                                    <div class="row mb-2">
+                                        <div class="col-md-4">
+                                            <p><strong>Référence CC:</strong> @Model[incidentIndex].Category.ReferenceCc</p>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <p><strong>Processus d'amélioration:</strong> @Model[incidentIndex].Category.ImprovementProcess</p>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive"> <!-- Pour la responsivité sur les petits écrans -->
+                                        <table class="table table-striped table-bordered">
+                                            <thead class="bg-secondary text-white"> <!-- En-tête de table stylisé -->
+                                                <tr>
+                                                    <th>Libéllé</th>
+                                                    <th>Oui</th>
+                                                    <th>Non</th>
+                                                    <th>À évaluer</th>
+                                                    <th>Commentaires</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @for (int lineIndex = 0; lineIndex < Model[incidentIndex].IncidentLines.Count; lineIndex++)
+                                                {
+                                                    <input type="hidden" asp-for="@Model[incidentIndex].IncidentLines[lineIndex].Id"/>
+                                                    <tr>
+                                                        <td>@Model[incidentIndex].IncidentLines[lineIndex].Line.Label</td>
+                                                        <td><input asp-for="@Model[incidentIndex].IncidentLines[lineIndex].Yes" type="checkbox"/></td>
+                                                        <td><input asp-for="@Model[incidentIndex].IncidentLines[lineIndex].No" type="checkbox"/></td>
+                                                        <td><input asp-for="@Model[incidentIndex].IncidentLines[lineIndex].ToEvalute" type="checkbox"/></td>
+                                                        <td>
+                                                            <textarea asp-for="@Model[incidentIndex].IncidentLines[lineIndex].Comment" class="form-control"></textarea> <!-- Classe form-control pour styliser -->
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                
+                <div class="d-flex justify-content-end mt-4"> <!-- Bouton aligné à droite -->
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-save"></i> Enregistrer les modifications <!-- Icone et texte pour clarté -->
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

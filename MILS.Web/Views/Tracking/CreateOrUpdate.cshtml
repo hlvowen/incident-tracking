@@ -1,0 +1,142 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model MILS.Web.Models.Tracking.CreateOrUpdateTrackingFormVM
+
+@{
+    ViewBag.Title = Model.Id > 0 ? "Modifier un suivi": "Ajouter un suivi" ;
+    Layout = "_Layout";
+}
+
+<form method="post" asp-controller="Tracking" asp-action="CreateOrUpdate">
+    <input type="hidden" asp-for="Id" value="@Model.Id"/>
+    <div class="card mb-4 shadow"> <!-- Ajouté un peu de marge et une ombre à la carte -->
+        <div class="card-header bg-primary text-white"> <!-- En-tête de la carte avec fond coloré -->
+            <h5 class="card-title">@(Model.Id > 0 ? "Modifier": "Ajouter") un suivi</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3"> <!-- g-3 pour l'espacement entre les colonnes -->
+                <div class="col-md-6"> <!-- Taille de la colonne ajustée pour les écrans moyens -->
+                    <div class="form-group"> <!-- Utilisation de form-group pour le regroupement correct -->
+                        <label for="IssueDate" class="form-label">Date d'émission</label>
+                        <input type="date" asp-for="IssueDate" class="form-control" id="IssueDate"> <!-- Id ajusté pour correspondre au modèle asp-for -->
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="IssuerName" class="form-label">Nom de l'émetteur</label>
+                        <input type="text" asp-for="IssuerName" class="form-control" id="IssuerName"> <!-- Id ajusté pour correspondre au modèle asp-for -->
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3"> <!-- mt-3 pour l'espacement entre les rangées -->
+                <div class="col">
+                    <label for="CategoryIds" class="form-label">Catégories</label> <!-- Ajouté une étiquette pour le sélecteur -->
+                    <select asp-for="CategoryIds" class="form-control form-control-lg selectpicker" multiple title="Choisissez les catégories">
+                        @foreach (SelectListItem category in Model.Categories)
+                        {
+                            <option selected="@category.Selected" disabled="@category.Disabled" value="@category.Value">@category.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            
+            @if (Model.CategoryIdsSelected is not null && Model.CategoryIdsSelected.Count() > 0)
+            {
+                @for (var categorySelectedIndex = 0; categorySelectedIndex < Model.CategoryIdsSelected.Count(); categorySelectedIndex++)
+                {
+                    <input type="hidden" asp-for="@Model.CategoryIdsSelected[categorySelectedIndex]"/>
+                }
+            }
+            
+            @if (Model.Incidents is not null && Model.Incidents.Count() > 0)
+            {
+                <hr/>
+                <div class="row mt-5">
+                    <div class="col-6 text-start">
+                        <h4>Gestion des incidents</h4>
+                    </div>
+                    <div class="col-6"></div>
+                </div>
+                <div class="row">
+                    <div class="accordion accordion-flush" id="accordionFlushExample">
+                        @for (int incidentIndex = 0; incidentIndex < Model.Incidents.Count; incidentIndex++)
+                        {
+                            <input type="hidden" asp-for="@Model.Incidents[incidentIndex].Id"/>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="flush-heading-@incidentIndex">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-@incidentIndex" aria-expanded="false" aria-controls="flush-collapse-@incidentIndex">
+                                        @Model.Incidents[incidentIndex].Category.ShortLabel <!-- Information plus claire -->
+                                    </button>
+                                </h2>
+                                <div id="flush-collapse-@incidentIndex" class="accordion-collapse collapse" aria-labelledby="flush-heading-@incidentIndex" data-bs-parent="#accordionFlushExample">
+                                    <div class="accordion-body">
+                                        <h5 class="fw-bold mb-3">Catégorie: @Model.Incidents[incidentIndex].Category.ShortLabel</h5> <!-- Titre de la section -->
+                                        <div class="row mb-2">
+                                            <div class="col-md-4">
+                                                <p><strong>Référence CC:</strong> @Model.Incidents[incidentIndex].Category.ReferenceCc</p>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <p><strong>Processus d'amélioration:</strong> @Model.Incidents[incidentIndex].Category.ImprovementProcess</p>
+                                            </div>
+                                        </div>
+                                        <div class="table-responsive"> <!-- Pour la responsivité sur les petits écrans -->
+                                            <table class="table table-striped table-bordered">
+                                                <thead class="bg-secondary text-white"> <!-- En-tête de table stylisé -->
+                                                <tr>
+                                                    <th>Libéllé</th>
+                                                    <th>Oui</th>
+                                                    <th>Non</th>
+                                                    <th>À évaluer</th>
+                                                    <th>Commentaires</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                @for (int lineIndex = 0; lineIndex < Model.Incidents[incidentIndex].IncidentLines.Count; lineIndex++)
+                                                {
+                                                    <input type="hidden" asp-for="@Model.Incidents[incidentIndex].IncidentLines[lineIndex].Id"/>
+                                                    <tr>
+                                                        <td>@Model.Incidents[incidentIndex].IncidentLines[lineIndex].Line.Label</td>
+                                                        <td><input asp-for="@Model.Incidents[incidentIndex].IncidentLines[lineIndex].Yes" type="checkbox"/></td>
+                                                        <td><input asp-for="@Model.Incidents[incidentIndex].IncidentLines[lineIndex].No" type="checkbox"/></td>
+                                                        <td><input asp-for="@Model.Incidents[incidentIndex].IncidentLines[lineIndex].ToEvalute" type="checkbox"/></td>
+                                                        <td>
+                                                            <textarea asp-for="@Model.Incidents[incidentIndex].IncidentLines[lineIndex].Comment" class="form-control"></textarea> <!-- Classe form-control pour styliser -->
+                                                        </td>
+                                                    </tr>
+                                                }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="card-footer"> <!-- Pied de carte pour les actions -->
+            <div class="row">
+                <div class="col-md-6">
+                    <a class="btn btn-secondary" asp-controller="Tracking" asp-action="Index">
+                        <i class="bi bi-arrow-return-left"></i> Annuler <!-- Icône ajoutée pour la clarté visuelle -->
+                    </a>
+                </div>
+                <div class="col-md-6 text-end">
+                    <button class="btn btn-success" type="submit">
+                        <i class="bi bi-save"></i> Enregistrer <!-- Icône ajoutée pour la clarté visuelle -->
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts
+{
+    <script>
+    $(function () {
+        $('.selectpicker').selectpicker();
+        // toast.show() // Assurez-vous que cela est nécessaire, sinon supprimez-le
+    });
+    </script>
+}
