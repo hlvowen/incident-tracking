@@ -143,19 +143,12 @@ namespace MILS.Web.Controllers
             {
                 tracking.IssuerName = model.IssuerName;
                 tracking.IssueDate = model.IssueDate;
-                    
-                List<int> existingCategoryIds = tracking.Incidents
-                                                        .Select(i => i.CategoryId)
-                                                        .ToList();
-                
-                List<int> categoryIdsToAdd = model.CategoryIdsSelected.Where(cId => !existingCategoryIds.Contains(cId))
-                                                            .ToList();
 
                 List<Incident> incidents = new List<Incident>();
                 
-                if (categoryIdsToAdd is not null && categoryIdsToAdd.Count() > 0)
+                if (model.CategoryIds is not null && model.CategoryIds.Count() > 0)
                 {
-                    foreach (var categoryId in categoryIdsToAdd)
+                    foreach (var categoryId in model.CategoryIds)
                     {
                         Category category = _categoryRepository.GetForUpsertBy(categoryId);
                     

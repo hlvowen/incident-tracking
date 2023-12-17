@@ -10229,6 +10229,10 @@
       "PackagePath": "staticwebassets/lib/fontawesome/webfonts/fa-v4compatibility.woff2"
     },
     {
+      "Id": "/Users/ovo/Downloads/ProjetSuivis/MILS.Web/wwwroot/lib/icons-bootstrap/.DS_Store",
+      "PackagePath": "staticwebassets/lib/icons-bootstrap/.DS_Store"
+    },
+    {
       "Id": "/Users/ovo/Downloads/ProjetSuivis/MILS.Web/wwwroot/lib/icons-bootstrap/.browserslistrc",
       "PackagePath": "staticwebassets/lib/icons-bootstrap/.browserslistrc"
     },
